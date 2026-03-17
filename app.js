@@ -107,6 +107,15 @@ function onGlobalKeydown(event) {
       updateView();
     }
     event.preventDefault();
+    return;
+  }
+
+  if (key === " " || key === "Spacebar") {
+    if (state.prefix.length > 0) {
+      state.prefix = "";
+      updateView();
+    }
+    event.preventDefault();
   }
 }
 
