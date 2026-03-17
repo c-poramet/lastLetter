@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Prefix Word Finder</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="header">
+      <span class="header-title">Prefix Finder</span>
+      <span class="header-dot" aria-hidden="true"></span>
+      <span class="header-sub">type anywhere</span>
+      <span class="guesses-left-badge" id="dictionarySize">loading words</span>
+    </header>
+
+    <main class="main">
+      <section class="solver-layout">
+        <aside class="left-panel panel">
+          <h2 class="panel-title">Search Prefix</h2>
+
+          <label for="prefixInput" class="section-label">Current letters</label>
+          <input
+            id="prefixInput"
+            class="word-input"
+            type="text"
+            autocomplete="off"
+            autocapitalize="none"
+            spellcheck="false"
+            readonly
+            value=""
+            placeholder="TYPE"
+            aria-label="Current letter prefix"
+          />
+
+          <div class="controls-row">
+            <button id="clearBtn" class="btn-reset" type="button">Clear</button>
+            <button id="focusBtn" class="btn-reset" type="button">Focus Prefix</button>
+          </div>
+
+          <div class="stats-bar">
+            <article class="stat-chip stat-possible">
+              <span id="matchCount" class="stat-val">0</span>
+              <span class="stat-lbl">Matches</span>
+            </article>
+            <article class="stat-chip stat-guesses">
+              <span id="renderCount" class="stat-val">0</span>
+              <span class="stat-lbl">Shown</span>
+            </article>
+          </div>
+
+          <p class="helper-copy">
+            Keyboard: letters append, Backspace removes, Escape clears. Works no matter where focus is.
+          </p>
+        </aside>
+
+        <section class="right-panel panel" aria-live="polite">
+          <div class="panel-head">
+            <h2 class="panel-title panel-title-right">Matching Words</h2>
+            <span id="statusTag" class="setting-tag">waiting</span>
+          </div>
+
+          <p id="renderNote" class="render-note"></p>
+          <div id="results" class="results-grid"></div>
+        </section>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span class="footer-credit">Wordlist: dwyl/english-words</span>
+    </footer>
+
+    <script src="app.js" defer></script>
+  </body>
+</html>
