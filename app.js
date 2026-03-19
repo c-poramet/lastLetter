@@ -22,6 +22,7 @@ const elements = {
 
 const state = {
   words: [],
+  wordsInFileOrder: [],
   wordsByLength: [],
   availableLengths: [],
   availableLengthsDesc: [],
@@ -96,6 +97,7 @@ async function loadWordList() {
         continue;
       }
 
+      state.wordsInFileOrder.push(word);
       state.words.push(word);
     }
 
@@ -117,8 +119,8 @@ async function loadWordList() {
 function buildLengthBuckets() {
   state.wordsByLength = [];
 
-  for (let i = 0; i < state.words.length; i += 1) {
-    const word = state.words[i];
+  for (let i = 0; i < state.wordsInFileOrder.length; i += 1) {
+    const word = state.wordsInFileOrder[i];
     const length = word.length;
 
     if (!state.wordsByLength[length]) {
@@ -266,7 +268,6 @@ function collectVisibleMatches(prefix, range, count) {
   }
 
   const words = [];
-  const suffix = `${prefix}{`;
   const descending = state.sortMode === SORT_MODES.LENGTH_DESC;
   const lengths = descending ? state.availableLengthsDesc : state.availableLengths;
 
@@ -281,17 +282,15 @@ function collectVisibleMatches(prefix, range, count) {
       continue;
     }
 
-    const start = lowerBound(bucket, prefix);
-    const end = lowerBound(bucket, suffix);
-    const matchesInBucket = end - start;
+    for (let j = 0; j < bucket.length; j += 1) {
+      const candidate = bucket[j];
+      if (candidate.startsWith(prefix)) {
+        words.push(candidate);
 
-    if (matchesInBucket <= 0) {
-      continue;
-    }
-
-    const take = Math.min(count - words.length, matchesInBucket);
-    for (let j = 0; j < take; j += 1) {
-      words.push(bucket[start + j]);
+        if (words.length >= count) {
+          break;
+        }
+      }
     }
   }
 
