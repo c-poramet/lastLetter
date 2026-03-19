@@ -30,6 +30,7 @@ async function start() {
 
 function bindEvents() {
   document.addEventListener("keydown", onGlobalKeydown);
+  elements.prefixInput.addEventListener("input", onPrefixInput);
 
   elements.clearBtn.addEventListener("click", () => {
     state.prefix = "";
@@ -38,7 +39,19 @@ function bindEvents() {
 
   elements.focusBtn.addEventListener("click", () => {
     elements.prefixInput.focus();
+    elements.prefixInput.setSelectionRange(state.prefix.length, state.prefix.length);
   });
+}
+
+function onPrefixInput(event) {
+  const cleaned = event.target.value.toLowerCase().replace(/[^a-z]/g, "");
+  if (cleaned !== state.prefix) {
+    state.prefix = cleaned;
+    updateView();
+    return;
+  }
+
+  event.target.value = state.prefix.toUpperCase();
 }
 
 async function loadWordList() {
@@ -76,6 +89,10 @@ async function loadWordList() {
 
 function onGlobalKeydown(event) {
   if (!state.ready) {
+    return;
+  }
+
+  if (isTypingContext(event.target)) {
     return;
   }
 
@@ -117,6 +134,19 @@ function onGlobalKeydown(event) {
     }
     event.preventDefault();
   }
+}
+
+function isTypingContext(target) {
+  if (!(target instanceof HTMLElement)) {
+    return false;
+  }
+
+  if (target.isContentEditable) {
+    return true;
+  }
+
+  const tag = target.tagName;
+  return tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT";
 }
 
 function updateView() {

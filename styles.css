@@ -39,6 +39,7 @@ body {
   background: var(--bg);
   color: var(--text-pri);
   font-family: var(--font-ui);
+  min-height: 100dvh;
 }
 
 .header {
@@ -46,10 +47,11 @@ body {
   top: 0;
   left: 0;
   right: 0;
-  padding: 18px 28px;
+  padding: calc(14px + env(safe-area-inset-top, 0px)) 24px 14px;
   z-index: 10;
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 12px;
   border-bottom: 1px solid var(--border);
   background: rgba(43, 43, 43, 0.92);
@@ -97,9 +99,9 @@ body {
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  height: 100vh;
-  overflow: hidden;
-  padding: 72px 16px 16px;
+  min-height: 100dvh;
+  overflow: auto;
+  padding: 86px 16px 16px;
 }
 
 .solver-layout {
@@ -116,7 +118,7 @@ body {
   min-width: 220px;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .right-panel {
@@ -225,7 +227,7 @@ body {
 .btn-reset {
   flex: 1;
   padding: 12px;
-  min-height: 36px;
+  min-height: 44px;
   border-radius: var(--radius-sm);
   background: transparent;
   color: var(--text-sec);
@@ -321,7 +323,8 @@ body {
   position: fixed;
   left: 0;
   bottom: 0;
-  padding: 14px 28px;
+  right: 0;
+  padding: 12px 24px calc(12px + env(safe-area-inset-bottom, 0px));
   z-index: 10;
 }
 
@@ -333,6 +336,16 @@ body {
 }
 
 @media (max-width: 900px) {
+  .header {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .main {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
   .left-panel {
     flex-basis: 300px;
   }
@@ -344,9 +357,8 @@ body {
 
 @media (max-width: 720px) {
   .main {
-    height: auto;
-    overflow: visible;
-    padding: 64px 10px 70px;
+    min-height: auto;
+    padding: 96px 10px 16px;
   }
 
   .solver-layout {
@@ -361,7 +373,7 @@ body {
   }
 
   .right-panel {
-    overflow: visible;
+    overflow: hidden;
   }
 
   .results-grid {
@@ -371,5 +383,48 @@ body {
 
   .word-item {
     font-size: 12px;
+  }
+
+  .footer {
+    position: static;
+    padding: 10px 14px 16px;
+  }
+}
+
+@media (max-width: 520px) {
+  .header {
+    gap: 8px;
+  }
+
+  .header-sub {
+    order: 3;
+    flex-basis: 100%;
+  }
+
+  .guesses-left-badge {
+    margin-left: 0;
+  }
+
+  .panel {
+    padding: 16px 14px;
+    border-radius: 14px;
+  }
+
+  .controls-row,
+  .stats-bar {
+    flex-direction: column;
+  }
+
+  .results-grid {
+    column-width: 96px;
+    column-gap: 8px;
+  }
+}
+
+@media (hover: none) {
+  .btn-reset:hover {
+    transform: none;
+    color: var(--text-sec);
+    border-color: var(--border);
   }
 }
