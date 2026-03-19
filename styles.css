@@ -224,6 +224,10 @@ body {
   margin-bottom: 14px;
 }
 
+.controls-row .btn-reset {
+  flex: 1;
+}
+
 .sort-select {
   width: 100%;
   min-height: 44px;
@@ -248,6 +252,7 @@ body {
   width: 100%;
   min-height: 52px;
   margin-bottom: 16px;
+  flex: 0 0 auto;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -255,7 +260,6 @@ body {
 }
 
 .btn-reset {
-  flex: 1;
   padding: 12px;
   min-height: 44px;
   border-radius: var(--radius-sm);

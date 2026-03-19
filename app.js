@@ -1,4 +1,4 @@
-const MAX_RENDER = 25000;
+const DEFAULT_MAX_RENDER = 25000;
 const RENDER_CHUNK_SIZE = 450;
 const SORT_MODES = {
   ALPHA_ASC: "alpha-asc",
@@ -16,8 +16,8 @@ const elements = {
   dictionarySize: document.getElementById("dictionarySize"),
   prefixInput: document.getElementById("prefixInput"),
   clearBtn: document.getElementById("clearBtn"),
-  focusBtn: document.getElementById("focusBtn"),
   sortSelect: document.getElementById("sortSelect"),
+  maxShownSelect: document.getElementById("maxShownSelect"),
   flowToggleBtn: document.getElementById("flowToggleBtn"),
   matchCount: document.getElementById("matchCount"),
   renderCount: document.getElementById("renderCount"),
@@ -34,6 +34,7 @@ const state = {
   availableLengthsDesc: [],
   prefix: "",
   sortMode: SORT_MODES.ALPHA_ASC,
+  maxRender: DEFAULT_MAX_RENDER,
   flowMode: FLOW_MODES.COLUMN_FLOW,
   ready: false,
   renderJobId: 0
@@ -51,6 +52,7 @@ function bindEvents() {
   document.addEventListener("keydown", onGlobalKeydown);
   elements.prefixInput.addEventListener("input", onPrefixInput);
   elements.sortSelect.addEventListener("change", onSortChange);
+  elements.maxShownSelect.addEventListener("change", onMaxShownChange);
   elements.flowToggleBtn.addEventListener("click", onFlowToggle);
 
   elements.clearBtn.addEventListener("click", () => {
@@ -58,10 +60,6 @@ function bindEvents() {
     updateView();
   });
 
-  elements.focusBtn.addEventListener("click", () => {
-    elements.prefixInput.focus();
-    elements.prefixInput.setSelectionRange(state.prefix.length, state.prefix.length);
-  });
 }
 
 function onPrefixInput(event) {
@@ -85,6 +83,19 @@ function onSortChange(event) {
 
   if (nextMode !== state.sortMode) {
     state.sortMode = nextMode;
+    updateView();
+  }
+}
+
+function onMaxShownChange(event) {
+  const parsed = Number.parseInt(event.target.value, 10);
+  if (!Number.isFinite(parsed) || parsed <= 0) {
+    event.target.value = String(state.maxRender);
+    return;
+  }
+
+  if (parsed !== state.maxRender) {
+    state.maxRender = parsed;
     updateView();
   }
 }
@@ -229,7 +240,13 @@ function updateView() {
     state.sortMode = selectedSortMode;
   }
 
+  const selectedMaxShown = Number.parseInt(elements.maxShownSelect.value, 10);
+  if (Number.isFinite(selectedMaxShown) && selectedMaxShown > 0) {
+    state.maxRender = selectedMaxShown;
+  }
+
   elements.prefixInput.value = state.prefix.toUpperCase();
+  elements.maxShownSelect.value = String(state.maxRender);
   elements.flowToggleBtn.textContent = getFlowLabel(state.flowMode);
   elements.flowToggleBtn.setAttribute(
     "aria-pressed",
@@ -255,14 +272,14 @@ function updateView() {
 
   const range = findPrefixRange(state.prefix);
   const totalMatches = range.end - range.start;
-  const shownMatches = Math.min(totalMatches, MAX_RENDER);
+  const shownMatches = Math.min(totalMatches, state.maxRender);
   const wordsToRender = collectVisibleMatches(state.prefix, range, shownMatches);
 
   elements.matchCount.textContent = formatNumber(totalMatches);
   elements.renderCount.textContent = formatNumber(shownMatches);
 
-  if (totalMatches > MAX_RENDER) {
-    elements.renderNote.textContent = `Showing first ${formatNumber(MAX_RENDER)} of ${formatNumber(totalMatches)} matches (${getSortLabel(state.sortMode)}). Type more letters to narrow.`;
+  if (totalMatches > state.maxRender) {
+    elements.renderNote.textContent = `Showing first ${formatNumber(state.maxRender)} of ${formatNumber(totalMatches)} matches (${getSortLabel(state.sortMode)}). Type more letters to narrow.`;
   } else {
     elements.renderNote.textContent = `${formatNumber(totalMatches)} match${totalMatches === 1 ? "" : "es"} for ${state.prefix.toUpperCase()} (${getSortLabel(state.sortMode)}).`;
   }
