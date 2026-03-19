@@ -224,6 +224,11 @@ function updateView() {
   state.renderJobId += 1;
   const activeRenderJob = state.renderJobId;
 
+  const selectedSortMode = elements.sortSelect.value;
+  if (Object.values(SORT_MODES).includes(selectedSortMode)) {
+    state.sortMode = selectedSortMode;
+  }
+
   elements.prefixInput.value = state.prefix.toUpperCase();
   elements.flowToggleBtn.textContent = getFlowLabel(state.flowMode);
   elements.flowToggleBtn.setAttribute(
