@@ -57,11 +57,15 @@
             <option value="length-desc">Length: Long to Short</option>
           </select>
 
-          <label for="flowSelect" class="section-label">Result order</label>
-          <select id="flowSelect" class="sort-select" aria-label="Result display order">
-            <option value="column-flow">As Is (Top to Down, then Left to Right)</option>
-            <option value="row-flow">Left to Right, then Top to Down</option>
-          </select>
+          <label for="flowToggleBtn" class="section-label">Result order</label>
+          <button
+            id="flowToggleBtn"
+            class="btn-reset flow-toggle-btn"
+            type="button"
+            aria-label="Toggle result display order"
+          >
+            As Is (Top to Down, then Left to Right)
+          </button>
 
           <div class="stats-bar">
             <article class="stat-chip stat-possible">

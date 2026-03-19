@@ -244,6 +244,11 @@ body {
   border-color: rgba(201, 127, 80, 0.45);
 }
 
+.flow-toggle-btn {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
 .btn-reset {
   flex: 1;
   padding: 12px;

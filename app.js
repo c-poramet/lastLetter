@@ -18,7 +18,7 @@ const elements = {
   clearBtn: document.getElementById("clearBtn"),
   focusBtn: document.getElementById("focusBtn"),
   sortSelect: document.getElementById("sortSelect"),
-  flowSelect: document.getElementById("flowSelect"),
+  flowToggleBtn: document.getElementById("flowToggleBtn"),
   matchCount: document.getElementById("matchCount"),
   renderCount: document.getElementById("renderCount"),
   statusTag: document.getElementById("statusTag"),
@@ -51,7 +51,7 @@ function bindEvents() {
   document.addEventListener("keydown", onGlobalKeydown);
   elements.prefixInput.addEventListener("input", onPrefixInput);
   elements.sortSelect.addEventListener("change", onSortChange);
-  elements.flowSelect.addEventListener("change", onFlowChange);
+  elements.flowToggleBtn.addEventListener("click", onFlowToggle);
 
   elements.clearBtn.addEventListener("click", () => {
     state.prefix = "";
@@ -89,19 +89,14 @@ function onSortChange(event) {
   }
 }
 
-function onFlowChange(event) {
-  const nextMode = event.target.value;
+function onFlowToggle() {
+  state.flowMode =
+    state.flowMode === FLOW_MODES.COLUMN_FLOW
+      ? FLOW_MODES.ROW_FLOW
+      : FLOW_MODES.COLUMN_FLOW;
 
-  if (!Object.values(FLOW_MODES).includes(nextMode)) {
-    event.target.value = state.flowMode;
-    return;
-  }
-
-  if (nextMode !== state.flowMode) {
-    state.flowMode = nextMode;
-    applyResultsFlowMode();
-    updateView();
-  }
+  applyResultsFlowMode();
+  updateView();
 }
 
 async function loadWordList() {
@@ -230,7 +225,7 @@ function updateView() {
   const activeRenderJob = state.renderJobId;
 
   elements.prefixInput.value = state.prefix.toUpperCase();
-  elements.flowSelect.value = state.flowMode;
+  elements.flowToggleBtn.textContent = getFlowLabel(state.flowMode);
   applyResultsFlowMode();
 
   if (!state.ready) {
@@ -397,4 +392,12 @@ function getSortLabel(sortMode) {
   }
 
   return "A to Z";
+}
+
+function getFlowLabel(flowMode) {
+  if (flowMode === FLOW_MODES.ROW_FLOW) {
+    return "Left to Right, then Top to Down";
+  }
+
+  return "As Is (Top to Down, then Left to Right)";
 }
