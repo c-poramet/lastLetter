@@ -246,7 +246,12 @@ body {
 
 .flow-toggle-btn {
   width: 100%;
+  min-height: 52px;
   margin-bottom: 16px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
 }
 
 .btn-reset {

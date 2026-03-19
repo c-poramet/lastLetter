@@ -226,6 +226,10 @@ function updateView() {
 
   elements.prefixInput.value = state.prefix.toUpperCase();
   elements.flowToggleBtn.textContent = getFlowLabel(state.flowMode);
+  elements.flowToggleBtn.setAttribute(
+    "aria-pressed",
+    String(state.flowMode === FLOW_MODES.ROW_FLOW)
+  );
   applyResultsFlowMode();
 
   if (!state.ready) {
@@ -396,8 +400,8 @@ function getSortLabel(sortMode) {
 
 function getFlowLabel(flowMode) {
   if (flowMode === FLOW_MODES.ROW_FLOW) {
-    return "Left to Right, then Top to Down";
+    return "Order: Left-Right";
   }
 
-  return "As Is (Top to Down, then Left to Right)";
+  return "Order: Top-Down";
 }
