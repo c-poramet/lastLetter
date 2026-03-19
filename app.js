@@ -7,12 +7,18 @@ const SORT_MODES = {
   LENGTH_DESC: "length-desc"
 };
 
+const FLOW_MODES = {
+  COLUMN_FLOW: "column-flow",
+  ROW_FLOW: "row-flow"
+};
+
 const elements = {
   dictionarySize: document.getElementById("dictionarySize"),
   prefixInput: document.getElementById("prefixInput"),
   clearBtn: document.getElementById("clearBtn"),
   focusBtn: document.getElementById("focusBtn"),
   sortSelect: document.getElementById("sortSelect"),
+  flowSelect: document.getElementById("flowSelect"),
   matchCount: document.getElementById("matchCount"),
   renderCount: document.getElementById("renderCount"),
   statusTag: document.getElementById("statusTag"),
@@ -28,6 +34,7 @@ const state = {
   availableLengthsDesc: [],
   prefix: "",
   sortMode: SORT_MODES.ALPHA_ASC,
+  flowMode: FLOW_MODES.COLUMN_FLOW,
   ready: false,
   renderJobId: 0
 };
@@ -44,6 +51,7 @@ function bindEvents() {
   document.addEventListener("keydown", onGlobalKeydown);
   elements.prefixInput.addEventListener("input", onPrefixInput);
   elements.sortSelect.addEventListener("change", onSortChange);
+  elements.flowSelect.addEventListener("change", onFlowChange);
 
   elements.clearBtn.addEventListener("click", () => {
     state.prefix = "";
@@ -77,6 +85,21 @@ function onSortChange(event) {
 
   if (nextMode !== state.sortMode) {
     state.sortMode = nextMode;
+    updateView();
+  }
+}
+
+function onFlowChange(event) {
+  const nextMode = event.target.value;
+
+  if (!Object.values(FLOW_MODES).includes(nextMode)) {
+    event.target.value = state.flowMode;
+    return;
+  }
+
+  if (nextMode !== state.flowMode) {
+    state.flowMode = nextMode;
+    applyResultsFlowMode();
     updateView();
   }
 }
@@ -207,6 +230,8 @@ function updateView() {
   const activeRenderJob = state.renderJobId;
 
   elements.prefixInput.value = state.prefix.toUpperCase();
+  elements.flowSelect.value = state.flowMode;
+  applyResultsFlowMode();
 
   if (!state.ready) {
     elements.matchCount.textContent = "0";
@@ -352,6 +377,10 @@ function lowerBound(array, target) {
 
 function formatNumber(value) {
   return new Intl.NumberFormat("en-US").format(value);
+}
+
+function applyResultsFlowMode() {
+  elements.results.classList.toggle("row-flow", state.flowMode === FLOW_MODES.ROW_FLOW);
 }
 
 function getSortLabel(sortMode) {
