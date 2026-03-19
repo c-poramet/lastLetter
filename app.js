@@ -12,6 +12,8 @@ const FLOW_MODES = {
   ROW_FLOW: "row-flow"
 };
 
+const GLOBAL_TYPE_ANYWHERE_ENABLED = !isPhoneOrTabletDevice();
+
 const STORAGE_KEYS = {
   SORT_MODE: "prefixFinder.sortMode",
   FLOW_MODE: "prefixFinder.flowMode"
@@ -182,7 +184,7 @@ function onGlobalKeydown(event) {
     return;
   }
 
-  if (isTypingContext(event.target)) {
+  if (!GLOBAL_TYPE_ANYWHERE_ENABLED && isTypingContext(event.target)) {
     return;
   }
 
@@ -274,7 +276,9 @@ function updateView() {
   if (!state.prefix) {
     elements.matchCount.textContent = formatNumber(state.words.length);
     elements.renderCount.textContent = "0";
-    elements.renderNote.textContent = `Type letters to filter. Example: C, then A, then T. Sort: ${getSortLabel(state.sortMode)}.`;
+    elements.renderNote.textContent = GLOBAL_TYPE_ANYWHERE_ENABLED
+      ? `Type letters anywhere to filter. Example: C, then A, then T. Sort: ${getSortLabel(state.sortMode)}.`
+      : `Tap the input box to type letters. Example: C, then A, then T. Sort: ${getSortLabel(state.sortMode)}.`;
     elements.results.innerHTML = "";
     return;
   }
@@ -461,4 +465,13 @@ function persistPreferences() {
   } catch (error) {
     // Ignore storage errors (private mode, blocked storage, etc.)
   }
+}
+
+function isPhoneOrTabletDevice() {
+  const userAgent = navigator.userAgent || "";
+  const iOSDevice = /iPhone|iPad|iPod/i.test(userAgent);
+  const androidDevice = /Android/i.test(userAgent);
+  const iPadOSDesktopUA = navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1;
+
+  return iOSDevice || androidDevice || iPadOSDesktopUA;
 }
