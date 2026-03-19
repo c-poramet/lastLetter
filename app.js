@@ -12,6 +12,11 @@ const FLOW_MODES = {
   ROW_FLOW: "row-flow"
 };
 
+const STORAGE_KEYS = {
+  SORT_MODE: "prefixFinder.sortMode",
+  FLOW_MODE: "prefixFinder.flowMode"
+};
+
 const elements = {
   dictionarySize: document.getElementById("dictionarySize"),
   prefixInput: document.getElementById("prefixInput"),
@@ -43,6 +48,7 @@ const state = {
 start();
 
 async function start() {
+  loadPreferences();
   bindEvents();
   await loadWordList();
   updateView();
@@ -83,6 +89,7 @@ function onSortChange(event) {
 
   if (nextMode !== state.sortMode) {
     state.sortMode = nextMode;
+    persistPreferences();
     updateView();
   }
 }
@@ -106,6 +113,7 @@ function onFlowToggle() {
       ? FLOW_MODES.ROW_FLOW
       : FLOW_MODES.COLUMN_FLOW;
 
+  persistPreferences();
   applyResultsFlowMode();
   updateView();
 }
@@ -246,6 +254,7 @@ function updateView() {
   }
 
   elements.prefixInput.value = state.prefix.toUpperCase();
+  elements.sortSelect.value = state.sortMode;
   elements.maxShownSelect.value = String(state.maxRender);
   elements.flowToggleBtn.textContent = getFlowLabel(state.flowMode);
   elements.flowToggleBtn.setAttribute(
@@ -426,4 +435,30 @@ function getFlowLabel(flowMode) {
   }
 
   return "Order: Top-Down";
+}
+
+function loadPreferences() {
+  try {
+    const storedSortMode = localStorage.getItem(STORAGE_KEYS.SORT_MODE);
+    if (storedSortMode && Object.values(SORT_MODES).includes(storedSortMode)) {
+      state.sortMode = storedSortMode;
+      elements.sortSelect.value = storedSortMode;
+    }
+
+    const storedFlowMode = localStorage.getItem(STORAGE_KEYS.FLOW_MODE);
+    if (storedFlowMode && Object.values(FLOW_MODES).includes(storedFlowMode)) {
+      state.flowMode = storedFlowMode;
+    }
+  } catch (error) {
+    // Ignore storage errors (private mode, blocked storage, etc.)
+  }
+}
+
+function persistPreferences() {
+  try {
+    localStorage.setItem(STORAGE_KEYS.SORT_MODE, state.sortMode);
+    localStorage.setItem(STORAGE_KEYS.FLOW_MODE, state.flowMode);
+  } catch (error) {
+    // Ignore storage errors (private mode, blocked storage, etc.)
+  }
 }
