@@ -1,11 +1,18 @@
 const MAX_RENDER = 25000;
 const RENDER_CHUNK_SIZE = 450;
+const SORT_MODES = {
+  ALPHA_ASC: "alpha-asc",
+  ALPHA_DESC: "alpha-desc",
+  LENGTH_ASC: "length-asc",
+  LENGTH_DESC: "length-desc"
+};
 
 const elements = {
   dictionarySize: document.getElementById("dictionarySize"),
   prefixInput: document.getElementById("prefixInput"),
   clearBtn: document.getElementById("clearBtn"),
   focusBtn: document.getElementById("focusBtn"),
+  sortSelect: document.getElementById("sortSelect"),
   matchCount: document.getElementById("matchCount"),
   renderCount: document.getElementById("renderCount"),
   statusTag: document.getElementById("statusTag"),
@@ -15,7 +22,11 @@ const elements = {
 
 const state = {
   words: [],
+  wordsByLength: [],
+  availableLengths: [],
+  availableLengthsDesc: [],
   prefix: "",
+  sortMode: SORT_MODES.ALPHA_ASC,
   ready: false,
   renderJobId: 0
 };
@@ -31,6 +42,7 @@ async function start() {
 function bindEvents() {
   document.addEventListener("keydown", onGlobalKeydown);
   elements.prefixInput.addEventListener("input", onPrefixInput);
+  elements.sortSelect.addEventListener("change", onSortChange);
 
   elements.clearBtn.addEventListener("click", () => {
     state.prefix = "";
@@ -54,6 +66,20 @@ function onPrefixInput(event) {
   event.target.value = state.prefix.toUpperCase();
 }
 
+function onSortChange(event) {
+  const nextMode = event.target.value;
+
+  if (!Object.values(SORT_MODES).includes(nextMode)) {
+    event.target.value = state.sortMode;
+    return;
+  }
+
+  if (nextMode !== state.sortMode) {
+    state.sortMode = nextMode;
+    updateView();
+  }
+}
+
 async function loadWordList() {
   try {
     const response = await fetch("words.txt");
@@ -74,6 +100,7 @@ async function loadWordList() {
     }
 
     state.words.sort();
+    buildLengthBuckets();
 
     state.ready = true;
     elements.dictionarySize.textContent = `${formatNumber(state.words.length)} words`;
@@ -85,6 +112,30 @@ async function loadWordList() {
     elements.renderNote.textContent = "Could not load the dictionary file. Keep words.txt beside index.html.";
     console.error(error);
   }
+}
+
+function buildLengthBuckets() {
+  state.wordsByLength = [];
+
+  for (let i = 0; i < state.words.length; i += 1) {
+    const word = state.words[i];
+    const length = word.length;
+
+    if (!state.wordsByLength[length]) {
+      state.wordsByLength[length] = [];
+    }
+
+    state.wordsByLength[length].push(word);
+  }
+
+  state.availableLengths = [];
+  for (let i = 0; i < state.wordsByLength.length; i += 1) {
+    if (state.wordsByLength[i] && state.wordsByLength[i].length > 0) {
+      state.availableLengths.push(i);
+    }
+  }
+
+  state.availableLengthsDesc = state.availableLengths.slice().reverse();
 }
 
 function onGlobalKeydown(event) {
@@ -166,7 +217,7 @@ function updateView() {
   if (!state.prefix) {
     elements.matchCount.textContent = formatNumber(state.words.length);
     elements.renderCount.textContent = "0";
-    elements.renderNote.textContent = "Type letters to filter. Example: C, then A, then T.";
+    elements.renderNote.textContent = `Type letters to filter. Example: C, then A, then T. Sort: ${getSortLabel(state.sortMode)}.`;
     elements.results.innerHTML = "";
     return;
   }
@@ -174,17 +225,18 @@ function updateView() {
   const range = findPrefixRange(state.prefix);
   const totalMatches = range.end - range.start;
   const shownMatches = Math.min(totalMatches, MAX_RENDER);
+  const wordsToRender = collectVisibleMatches(state.prefix, range, shownMatches);
 
   elements.matchCount.textContent = formatNumber(totalMatches);
   elements.renderCount.textContent = formatNumber(shownMatches);
 
   if (totalMatches > MAX_RENDER) {
-    elements.renderNote.textContent = `Showing first ${formatNumber(MAX_RENDER)} of ${formatNumber(totalMatches)} matches. Type more letters to narrow.`;
+    elements.renderNote.textContent = `Showing first ${formatNumber(MAX_RENDER)} of ${formatNumber(totalMatches)} matches (${getSortLabel(state.sortMode)}). Type more letters to narrow.`;
   } else {
-    elements.renderNote.textContent = `${formatNumber(totalMatches)} match${totalMatches === 1 ? "" : "es"} for ${state.prefix.toUpperCase()}.`;
+    elements.renderNote.textContent = `${formatNumber(totalMatches)} match${totalMatches === 1 ? "" : "es"} for ${state.prefix.toUpperCase()} (${getSortLabel(state.sortMode)}).`;
   }
 
-  renderWordRange(range.start, shownMatches, activeRenderJob);
+  renderWordList(wordsToRender, activeRenderJob);
 }
 
 function findPrefixRange(prefix) {
@@ -194,8 +246,60 @@ function findPrefixRange(prefix) {
   return { start, end };
 }
 
-function renderWordRange(startIndex, count, renderJobId) {
+function collectVisibleMatches(prefix, range, count) {
   if (count === 0) {
+    return [];
+  }
+
+  if (state.sortMode === SORT_MODES.ALPHA_ASC) {
+    return state.words.slice(range.start, range.start + count);
+  }
+
+  if (state.sortMode === SORT_MODES.ALPHA_DESC) {
+    const words = new Array(count);
+
+    for (let i = 0; i < count; i += 1) {
+      words[i] = state.words[range.end - 1 - i];
+    }
+
+    return words;
+  }
+
+  const words = [];
+  const suffix = `${prefix}{`;
+  const descending = state.sortMode === SORT_MODES.LENGTH_DESC;
+  const lengths = descending ? state.availableLengthsDesc : state.availableLengths;
+
+  for (let i = 0; i < lengths.length; i += 1) {
+    if (words.length >= count) {
+      break;
+    }
+
+    const length = lengths[i];
+    const bucket = state.wordsByLength[length];
+    if (!bucket || bucket.length === 0) {
+      continue;
+    }
+
+    const start = lowerBound(bucket, prefix);
+    const end = lowerBound(bucket, suffix);
+    const matchesInBucket = end - start;
+
+    if (matchesInBucket <= 0) {
+      continue;
+    }
+
+    const take = Math.min(count - words.length, matchesInBucket);
+    for (let j = 0; j < take; j += 1) {
+      words.push(bucket[start + j]);
+    }
+  }
+
+  return words;
+}
+
+function renderWordList(words, renderJobId) {
+  if (words.length === 0) {
     elements.results.innerHTML = '<span class="word-item">No matches.</span>';
     return;
   }
@@ -210,10 +314,10 @@ function renderWordRange(startIndex, count, renderJobId) {
     }
 
     const fragment = document.createDocumentFragment();
-    const stop = Math.min(cursor + RENDER_CHUNK_SIZE, count);
+    const stop = Math.min(cursor + RENDER_CHUNK_SIZE, words.length);
 
     for (let i = cursor; i < stop; i += 1) {
-      const word = state.words[startIndex + i];
+      const word = words[i];
       const item = document.createElement("span");
       item.className = "word-item";
       item.textContent = word;
@@ -223,7 +327,7 @@ function renderWordRange(startIndex, count, renderJobId) {
     elements.results.appendChild(fragment);
     cursor = stop;
 
-    if (cursor < count) {
+    if (cursor < words.length) {
       requestAnimationFrame(appendChunk);
     }
   };
@@ -249,4 +353,20 @@ function lowerBound(array, target) {
 
 function formatNumber(value) {
   return new Intl.NumberFormat("en-US").format(value);
+}
+
+function getSortLabel(sortMode) {
+  if (sortMode === SORT_MODES.ALPHA_DESC) {
+    return "Z to A";
+  }
+
+  if (sortMode === SORT_MODES.LENGTH_ASC) {
+    return "Length: Short to Long";
+  }
+
+  if (sortMode === SORT_MODES.LENGTH_DESC) {
+    return "Length: Long to Short";
+  }
+
+  return "A to Z";
 }

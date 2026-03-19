@@ -221,7 +221,27 @@ body {
 .controls-row {
   display: flex;
   gap: 10px;
+  margin-bottom: 14px;
+}
+
+.sort-select {
+  width: 100%;
+  min-height: 44px;
   margin-bottom: 16px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  border: 1px solid var(--border-md);
+  color: var(--text-pri);
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  letter-spacing: 0.03em;
+  outline: none;
+  appearance: none;
+}
+
+.sort-select:focus {
+  border-color: rgba(201, 127, 80, 0.45);
 }
 
 .btn-reset {

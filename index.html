@@ -49,6 +49,14 @@
             <button id="focusBtn" class="btn-reset" type="button">Focus Prefix</button>
           </div>
 
+          <label for="sortSelect" class="section-label">Sort matches by</label>
+          <select id="sortSelect" class="sort-select" aria-label="Sort matching words">
+            <option value="alpha-asc">A to Z</option>
+            <option value="alpha-desc">Z to A</option>
+            <option value="length-asc">Length: Short to Long</option>
+            <option value="length-desc">Length: Long to Short</option>
+          </select>
+
           <div class="stats-bar">
             <article class="stat-chip stat-possible">
               <span id="matchCount" class="stat-val">0</span>
