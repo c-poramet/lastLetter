@@ -358,7 +358,7 @@ function collectVisibleMatches(prefix, range, count) {
 
 function renderWordList(words, renderJobId) {
   if (words.length === 0) {
-    elements.results.innerHTML = '<span class="word-item">No matches.</span>';
+    elements.results.innerHTML = '<div class="word-item">No matches.</div>';
     return;
   }
 
@@ -376,9 +376,9 @@ function renderWordList(words, renderJobId) {
 
     for (let i = cursor; i < stop; i += 1) {
       const word = words[i];
-      const item = document.createElement("span");
+      const item = document.createElement("div");
       item.className = "word-item";
-      item.textContent = word;
+      setWordItemContent(item, word);
       fragment.appendChild(item);
     }
 
@@ -391,6 +391,23 @@ function renderWordList(words, renderJobId) {
   };
 
   requestAnimationFrame(appendChunk);
+}
+
+function setWordItemContent(element, word) {
+  const BREAK_CHUNK = 12;
+
+  if (word.length <= BREAK_CHUNK) {
+    element.textContent = word;
+    return;
+  }
+
+  for (let i = 0; i < word.length; i += BREAK_CHUNK) {
+    element.appendChild(document.createTextNode(word.slice(i, i + BREAK_CHUNK)));
+
+    if (i + BREAK_CHUNK < word.length) {
+      element.appendChild(document.createElement("wbr"));
+    }
+  }
 }
 
 function lowerBound(array, target) {
