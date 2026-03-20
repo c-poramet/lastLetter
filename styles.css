@@ -81,8 +81,16 @@ body {
   text-transform: uppercase;
 }
 
-.guesses-left-badge {
+.header-stats {
   margin-left: auto;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.guesses-left-badge {
   font-family: var(--font-mono);
   font-size: var(--fs-xs);
   font-weight: 700;
@@ -95,13 +103,31 @@ body {
   text-transform: uppercase;
 }
 
+.badge-dict {
+  color: var(--accent);
+  background: rgba(201, 127, 80, 0.1);
+  border-color: rgba(201, 127, 80, 0.2);
+}
+
+.badge-match {
+  color: var(--clr-green);
+  background: rgba(108, 169, 101, 0.12);
+  border-color: rgba(108, 169, 101, 0.24);
+}
+
+.badge-shown {
+  color: var(--clr-yellow);
+  background: rgba(200, 182, 83, 0.12);
+  border-color: rgba(200, 182, 83, 0.24);
+}
+
 .main {
   display: flex;
   align-items: flex-start;
   justify-content: center;
   min-height: 100dvh;
   overflow: auto;
-  padding: 86px 16px 16px;
+  padding: 98px 16px 16px;
 }
 
 .solver-layout {
@@ -408,7 +434,7 @@ body {
 @media (max-width: 720px) {
   .main {
     min-height: auto;
-    padding: 96px 10px 16px;
+    padding: 122px 10px 16px;
   }
 
   .solver-layout {
@@ -456,8 +482,11 @@ body {
     flex-basis: 100%;
   }
 
-  .guesses-left-badge {
+  .header-stats {
+    order: 4;
+    flex-basis: 100%;
     margin-left: 0;
+    justify-content: flex-start;
   }
 
   .panel {

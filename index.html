@@ -22,7 +22,11 @@
       <span class="header-title">Prefix Finder</span>
       <span class="header-dot" aria-hidden="true"></span>
       <span class="header-sub">type anywhere</span>
-      <span class="guesses-left-badge" id="dictionarySize">loading words</span>
+      <div class="header-stats">
+        <span class="guesses-left-badge badge-dict" id="dictionarySize">loading words</span>
+        <span class="guesses-left-badge badge-match" id="matchCount">0 matches</span>
+        <span class="guesses-left-badge badge-shown" id="renderCount">0 shown</span>
+      </div>
     </header>
 
     <main class="main">
@@ -75,17 +79,6 @@
           >
             Order: Top-Down
           </button>
-
-          <div class="stats-bar">
-            <article class="stat-chip stat-possible">
-              <span id="matchCount" class="stat-val">0</span>
-              <span class="stat-lbl">Matches</span>
-            </article>
-            <article class="stat-chip stat-guesses">
-              <span id="renderCount" class="stat-val">0</span>
-              <span class="stat-lbl">Shown</span>
-            </article>
-          </div>
 
           <p class="helper-copy">
             Keyboard: letters append, Backspace removes, Space or Escape clears. Works no matter where focus is.

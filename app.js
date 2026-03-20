@@ -266,16 +266,16 @@ function updateView() {
   applyResultsFlowMode();
 
   if (!state.ready) {
-    elements.matchCount.textContent = "0";
-    elements.renderCount.textContent = "0";
+    elements.matchCount.textContent = getMatchesLabel(0);
+    elements.renderCount.textContent = getShownLabel(0);
     elements.renderNote.textContent = "Loading dictionary...";
     elements.results.innerHTML = "";
     return;
   }
 
   if (!state.prefix) {
-    elements.matchCount.textContent = formatNumber(state.words.length);
-    elements.renderCount.textContent = "0";
+    elements.matchCount.textContent = getMatchesLabel(state.words.length);
+    elements.renderCount.textContent = getShownLabel(0);
     elements.renderNote.textContent = GLOBAL_TYPE_ANYWHERE_ENABLED
       ? `Type letters anywhere to filter. Example: C, then A, then T. Sort: ${getSortLabel(state.sortMode)}.`
       : `Tap the input box to type letters. Example: C, then A, then T. Sort: ${getSortLabel(state.sortMode)}.`;
@@ -288,8 +288,8 @@ function updateView() {
   const shownMatches = Math.min(totalMatches, state.maxRender);
   const wordsToRender = collectVisibleMatches(state.prefix, range, shownMatches);
 
-  elements.matchCount.textContent = formatNumber(totalMatches);
-  elements.renderCount.textContent = formatNumber(shownMatches);
+  elements.matchCount.textContent = getMatchesLabel(totalMatches);
+  elements.renderCount.textContent = getShownLabel(shownMatches);
 
   if (totalMatches > state.maxRender) {
     elements.renderNote.textContent = `Showing first ${formatNumber(state.maxRender)} of ${formatNumber(totalMatches)} matches (${getSortLabel(state.sortMode)}). Type more letters to narrow.`;
@@ -428,6 +428,15 @@ function lowerBound(array, target) {
 
 function formatNumber(value) {
   return new Intl.NumberFormat("en-US").format(value);
+}
+
+function getMatchesLabel(value) {
+  const formatted = formatNumber(value);
+  return `${formatted} match${value === 1 ? "" : "es"}`;
+}
+
+function getShownLabel(value) {
+  return `${formatNumber(value)} shown`;
 }
 
 function applyResultsFlowMode() {
