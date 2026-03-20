@@ -56,7 +56,7 @@
           <select id="sortSelect" class="sort-select" aria-label="Sort matching words">
             <option value="alpha-asc">A to Z</option>
             <option value="alpha-desc">Z to A</option>
-            <option value="length-asc">Length: Short to Long</option>
+            <option value="length-asc" selected>Length: Short to Long</option>
             <option value="length-desc">Length: Long to Short</option>
           </select>
 
@@ -64,9 +64,9 @@
           <select id="maxShownSelect" class="sort-select" aria-label="Maximum number of shown matches">
             <option value="100">100</option>
             <option value="500">500</option>
-            <option value="1000">1,000</option>
+            <option value="1000" selected>1,000</option>
             <option value="5000">5,000</option>
-            <option value="25000" selected>25,000</option>
+            <option value="25000">25,000</option>
             <option value="50000">50,000</option>
           </select>
 
@@ -77,7 +77,7 @@
             type="button"
             aria-label="Toggle result display order"
           >
-            Order: Top-Down
+            Order: Left-Right
           </button>
 
           <p class="helper-copy">

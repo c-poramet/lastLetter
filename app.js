@@ -1,4 +1,4 @@
-const DEFAULT_MAX_RENDER = 25000;
+const DEFAULT_MAX_RENDER = 1000;
 const RENDER_CHUNK_SIZE = 450;
 const SORT_MODES = {
   ALPHA_ASC: "alpha-asc",
@@ -40,9 +40,9 @@ const state = {
   availableLengths: [],
   availableLengthsDesc: [],
   prefix: "",
-  sortMode: SORT_MODES.ALPHA_ASC,
+  sortMode: SORT_MODES.LENGTH_ASC,
   maxRender: DEFAULT_MAX_RENDER,
-  flowMode: FLOW_MODES.COLUMN_FLOW,
+  flowMode: FLOW_MODES.ROW_FLOW,
   ready: false,
   renderJobId: 0
 };
