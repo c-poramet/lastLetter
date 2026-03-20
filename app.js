@@ -49,7 +49,6 @@ const state = {
   maxRender: DEFAULT_MAX_RENDER,
   flowMode: FLOW_MODES.ROW_FLOW,
   settingsOpen: false,
-  mobileInputDockThreshold: 0,
   ready: false,
   renderJobId: 0
 };
@@ -89,7 +88,6 @@ function onViewportScroll() {
 }
 
 function onViewportResize() {
-  refreshMobileInputDockThreshold();
   updateMobileInputDock();
 }
 
@@ -121,8 +119,6 @@ function setSettingsOpen(isOpen) {
   elements.settingsToggleBtn.classList.toggle("active", state.settingsOpen);
   elements.settingsToggleBtn.setAttribute("aria-expanded", String(state.settingsOpen));
   elements.settingsMenu.setAttribute("aria-hidden", String(!state.settingsOpen));
-
-  refreshMobileInputDockThreshold();
   updateMobileInputDock();
 }
 
@@ -141,47 +137,19 @@ function getMobileInputDockTop() {
   return window.innerWidth <= 520 ? 142 : 112;
 }
 
-function getActiveScrollTop() {
-  const docTop = document.scrollingElement ? document.scrollingElement.scrollTop : window.pageYOffset;
-  const mainTop = elements.main ? elements.main.scrollTop : 0;
-  return Math.max(docTop || 0, mainTop || 0);
-}
-
 function isMobileViewport() {
   return window.innerWidth <= 720;
 }
 
-function refreshMobileInputDockThreshold() {
-  if (!elements.prefixInput || !isMobileViewport()) {
-    state.mobileInputDockThreshold = 0;
-    document.body.classList.remove("mobile-input-docked");
-    return;
-  }
-
-  const wasDocked = document.body.classList.contains("mobile-input-docked");
-  if (wasDocked) {
-    document.body.classList.remove("mobile-input-docked");
-  }
-
-  const rect = elements.prefixInput.getBoundingClientRect();
-  state.mobileInputDockThreshold = getActiveScrollTop() + rect.top - getMobileInputDockTop();
-
-  if (wasDocked) {
-    updateMobileInputDock();
-  }
-}
-
 function updateMobileInputDock() {
-  if (!isMobileViewport()) {
+  if (!isMobileViewport() || !elements.inputStickyWrap) {
     document.body.classList.remove("mobile-input-docked");
     return;
   }
 
-  if (!Number.isFinite(state.mobileInputDockThreshold) || state.mobileInputDockThreshold <= 0) {
-    refreshMobileInputDockThreshold();
-  }
-
-  const shouldDock = getActiveScrollTop() > state.mobileInputDockThreshold;
+  const wrapTop = elements.inputStickyWrap.getBoundingClientRect().top;
+  const dockTop = getMobileInputDockTop();
+  const shouldDock = wrapTop <= dockTop;
   document.body.classList.toggle("mobile-input-docked", shouldDock);
 }
 
@@ -251,7 +219,6 @@ async function loadWordList() {
     elements.dictionarySize.textContent = `${formatNumber(state.words.length)} words`;
     elements.statusTag.textContent = "ready";
     elements.statusTag.classList.add("ready");
-    refreshMobileInputDockThreshold();
     updateMobileInputDock();
   } catch (error) {
     elements.dictionarySize.textContent = "load error";
