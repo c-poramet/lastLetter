@@ -50,24 +50,26 @@
     <main class="main">
       <section id="solverLayout" class="solver-layout">
         <aside class="left-panel panel">
-          <h2 class="panel-title">Search Prefix</h2>
+          <div class="input-sticky-wrap">
+            <h2 class="panel-title">Search Prefix</h2>
 
-          <label for="prefixInput" class="section-label">Current letters</label>
-          <input
-            id="prefixInput"
-            class="word-input"
-            type="text"
-            autocomplete="off"
-            autocapitalize="none"
-            autocorrect="off"
-            spellcheck="false"
-            value=""
-            placeholder="TYPE"
-            aria-label="Current letter prefix"
-          />
+            <label for="prefixInput" class="section-label">Current letters</label>
+            <input
+              id="prefixInput"
+              class="word-input"
+              type="text"
+              autocomplete="off"
+              autocapitalize="none"
+              autocorrect="off"
+              spellcheck="false"
+              value=""
+              placeholder="TYPE"
+              aria-label="Current letter prefix"
+            />
 
-          <div class="controls-row">
-            <button id="clearBtn" class="btn-reset" type="button">Clear</button>
+            <div class="controls-row">
+              <button id="clearBtn" class="btn-reset" type="button">Clear</button>
+            </div>
           </div>
 
           <p class="helper-copy">
