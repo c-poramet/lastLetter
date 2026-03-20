@@ -338,13 +338,13 @@ body {
 }
 
 .results-grid {
-  column-width: 130px;
+  column-width: 180px;
   column-gap: 14px;
 }
 
 .results-grid.row-flow {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 0 14px;
   column-width: auto;
   column-gap: 0;
@@ -360,8 +360,9 @@ body {
   color: var(--text-pri);
   padding: 0 2px;
   max-width: 100%;
-  overflow-wrap: anywhere;
-  word-break: break-word;
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: auto;
 }
 
 .footer {
@@ -396,11 +397,11 @@ body {
   }
 
   .results-grid {
-    column-width: 120px;
+    column-width: 150px;
   }
 
   .results-grid.row-flow {
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   }
 }
 
@@ -426,12 +427,12 @@ body {
   }
 
   .results-grid {
-    column-width: 105px;
+    column-width: 130px;
     column-gap: 10px;
   }
 
   .results-grid.row-flow {
-    grid-template-columns: repeat(auto-fill, minmax(105px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
     gap: 0 10px;
   }
 
@@ -470,12 +471,12 @@ body {
   }
 
   .results-grid {
-    column-width: 96px;
+    column-width: 120px;
     column-gap: 8px;
   }
 
   .results-grid.row-flow {
-    grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
     gap: 0 8px;
   }
 }
