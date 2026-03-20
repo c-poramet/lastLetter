@@ -47,44 +47,8 @@
       </div>
     </header>
 
-    <aside id="settingsMenu" class="settings-menu" aria-hidden="true">
-      <div class="settings-head">
-        <h2 class="panel-title settings-title">Settings</h2>
-      </div>
-
-      <label for="sortSelect" class="section-label">Sort matches by</label>
-      <select id="sortSelect" class="sort-select" aria-label="Sort matching words">
-        <option value="alpha-asc">A to Z</option>
-        <option value="alpha-desc">Z to A</option>
-        <option value="length-asc" selected>Length: Short to Long</option>
-        <option value="length-desc">Length: Long to Short</option>
-      </select>
-
-      <label for="maxShownSelect" class="section-label">Max shown</label>
-      <select id="maxShownSelect" class="sort-select" aria-label="Maximum number of shown matches">
-        <option value="100">100</option>
-        <option value="500">500</option>
-        <option value="1000" selected>1,000</option>
-        <option value="5000">5,000</option>
-        <option value="25000">25,000</option>
-        <option value="50000">50,000</option>
-      </select>
-
-      <label for="flowToggleBtn" class="section-label">Result order</label>
-      <button
-        id="flowToggleBtn"
-        class="btn-reset flow-toggle-btn"
-        type="button"
-        aria-label="Toggle result display order"
-      >
-        Order: Left-Right
-      </button>
-
-      <p class="settings-hint">Desktop shortcut: press T to open or close settings.</p>
-    </aside>
-
     <main class="main">
-      <section class="solver-layout">
+      <section id="solverLayout" class="solver-layout">
         <aside class="left-panel panel">
           <h2 class="panel-title">Search Prefix</h2>
 
@@ -109,6 +73,42 @@
           <p class="helper-copy">
             Keyboard: letters append, Backspace removes, Space or Escape clears. Works no matter where focus is.
           </p>
+        </aside>
+
+        <aside id="settingsMenu" class="settings-menu panel" aria-hidden="true">
+          <div class="settings-head">
+            <h2 class="panel-title settings-title">Settings</h2>
+          </div>
+
+          <label for="sortSelect" class="section-label">Sort matches by</label>
+          <select id="sortSelect" class="sort-select" aria-label="Sort matching words">
+            <option value="alpha-asc">A to Z</option>
+            <option value="alpha-desc">Z to A</option>
+            <option value="length-asc" selected>Length: Short to Long</option>
+            <option value="length-desc">Length: Long to Short</option>
+          </select>
+
+          <label for="maxShownSelect" class="section-label">Max shown</label>
+          <select id="maxShownSelect" class="sort-select" aria-label="Maximum number of shown matches">
+            <option value="100">100</option>
+            <option value="500">500</option>
+            <option value="1000" selected>1,000</option>
+            <option value="5000">5,000</option>
+            <option value="25000">25,000</option>
+            <option value="50000">50,000</option>
+          </select>
+
+          <label for="flowToggleBtn" class="section-label">Result order</label>
+          <button
+            id="flowToggleBtn"
+            class="btn-reset flow-toggle-btn"
+            type="button"
+            aria-label="Toggle result display order"
+          >
+            Order: Left-Right
+          </button>
+
+          <p class="settings-hint">Desktop shortcut: press T to open or close settings.</p>
         </aside>
 
         <section class="right-panel panel" aria-live="polite">

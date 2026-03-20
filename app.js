@@ -20,6 +20,7 @@ const STORAGE_KEYS = {
 };
 
 const elements = {
+  solverLayout: document.getElementById("solverLayout"),
   dictionarySize: document.getElementById("dictionarySize"),
   settingsToggleBtn: document.getElementById("settingsToggleBtn"),
   settingsMenu: document.getElementById("settingsMenu"),
@@ -99,6 +100,7 @@ function onDocumentClick(event) {
 function setSettingsOpen(isOpen) {
   state.settingsOpen = Boolean(isOpen);
   document.body.classList.toggle("settings-open", state.settingsOpen);
+  elements.solverLayout.classList.toggle("settings-open", state.settingsOpen);
   elements.settingsToggleBtn.classList.toggle("active", state.settingsOpen);
   elements.settingsToggleBtn.setAttribute("aria-expanded", String(state.settingsOpen));
   elements.settingsMenu.setAttribute("aria-hidden", String(!state.settingsOpen));

@@ -58,10 +58,6 @@ body {
   backdrop-filter: blur(8px);
 }
 
-body.settings-open {
-  overflow: hidden;
-}
-
 .header-title {
   font-family: var(--font-ui);
   font-size: var(--fs-md);
@@ -153,26 +149,35 @@ body.settings-open {
 }
 
 .settings-menu {
-  position: fixed;
-  top: calc(62px + env(safe-area-inset-top, 0px));
-  right: 16px;
-  width: min(360px, calc(100vw - 24px));
-  background: var(--card-dark);
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-  box-shadow: 0 14px 48px rgba(0, 0, 0, 0.58), 0 2px 8px rgba(0, 0, 0, 0.35);
-  padding: 18px 16px 16px;
-  z-index: 20;
+  flex: 0 0 0;
+  min-width: 0;
+  max-width: 0;
   opacity: 0;
-  transform: translateY(-8px);
+  transform: translateX(10px);
   pointer-events: none;
-  transition: opacity 0.16s ease, transform 0.16s ease;
+  overflow: hidden;
+  padding: 0;
+  border-color: transparent;
+  box-shadow: none;
+  transition: max-width 0.2s ease, opacity 0.16s ease, transform 0.16s ease, padding 0.16s ease,
+    border-color 0.16s ease;
 }
 
-body.settings-open .settings-menu {
-  opacity: 1;
-  transform: translateY(0);
+.solver-layout.settings-open .settings-menu {
+  flex-basis: 320px;
+  min-width: 280px;
+  max-width: 360px;
+  width: 100%;
+  padding: 18px 16px 16px;
+  border-color: var(--border);
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.55), 0 2px 8px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  transform: translateX(0);
   pointer-events: auto;
+}
+
+body.settings-open .solver-layout.settings-open .settings-menu {
+  opacity: 1;
 }
 
 .settings-head {
@@ -493,6 +498,11 @@ body.settings-open .settings-menu {
     flex-basis: 300px;
   }
 
+  .solver-layout.settings-open .settings-menu {
+    flex-basis: 300px;
+    min-width: 250px;
+  }
+
   .results-grid {
     column-width: 150px;
   }
@@ -514,9 +524,23 @@ body.settings-open .settings-menu {
   }
 
   .left-panel,
+  .settings-menu,
   .right-panel {
     width: 100%;
     flex: none;
+  }
+
+  .settings-menu {
+    max-width: none;
+    transform: translateY(-6px);
+  }
+
+  .solver-layout.settings-open .settings-menu {
+    min-width: 0;
+    max-width: none;
+    margin-top: -4px;
+    margin-bottom: 0;
+    transform: translateY(0);
   }
 
   .right-panel {
@@ -558,12 +582,6 @@ body.settings-open .settings-menu {
     flex-basis: 100%;
     margin-left: 0;
     justify-content: flex-start;
-  }
-
-  .settings-menu {
-    right: 10px;
-    top: calc(102px + env(safe-area-inset-top, 0px));
-    width: calc(100vw - 20px);
   }
 
   .panel {
