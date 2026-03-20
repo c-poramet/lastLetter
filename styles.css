@@ -58,6 +58,10 @@ body {
   backdrop-filter: blur(8px);
 }
 
+body.settings-open {
+  overflow: hidden;
+}
+
 .header-title {
   font-family: var(--font-ui);
   font-size: var(--fs-md);
@@ -79,6 +83,33 @@ body {
   color: var(--text-sec);
   letter-spacing: 0.04em;
   text-transform: uppercase;
+}
+
+.icon-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-sec);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.12s, border-color 0.12s, background 0.12s, transform 0.08s;
+}
+
+.icon-btn:hover {
+  color: var(--text-pri);
+  border-color: var(--border-md);
+  background: var(--surface);
+  transform: translateY(-1px);
+}
+
+.icon-btn.active {
+  color: var(--text-pri);
+  border-color: rgba(255, 255, 255, 0.2);
+  background: var(--surface-2);
 }
 
 .header-stats {
@@ -119,6 +150,46 @@ body {
   color: var(--clr-yellow);
   background: rgba(200, 182, 83, 0.12);
   border-color: rgba(200, 182, 83, 0.24);
+}
+
+.settings-menu {
+  position: fixed;
+  top: calc(62px + env(safe-area-inset-top, 0px));
+  right: 16px;
+  width: min(360px, calc(100vw - 24px));
+  background: var(--card-dark);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: 0 14px 48px rgba(0, 0, 0, 0.58), 0 2px 8px rgba(0, 0, 0, 0.35);
+  padding: 18px 16px 16px;
+  z-index: 20;
+  opacity: 0;
+  transform: translateY(-8px);
+  pointer-events: none;
+  transition: opacity 0.16s ease, transform 0.16s ease;
+}
+
+body.settings-open .settings-menu {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.settings-head {
+  display: flex;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.settings-title {
+  margin-bottom: 0;
+}
+
+.settings-hint {
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  color: var(--text-dim);
+  line-height: 1.45;
 }
 
 .main {
@@ -487,6 +558,12 @@ body {
     flex-basis: 100%;
     margin-left: 0;
     justify-content: flex-start;
+  }
+
+  .settings-menu {
+    right: 10px;
+    top: calc(102px + env(safe-area-inset-top, 0px));
+    width: calc(100vw - 20px);
   }
 
   .panel {

@@ -21,6 +21,8 @@ const STORAGE_KEYS = {
 
 const elements = {
   dictionarySize: document.getElementById("dictionarySize"),
+  settingsToggleBtn: document.getElementById("settingsToggleBtn"),
+  settingsMenu: document.getElementById("settingsMenu"),
   prefixInput: document.getElementById("prefixInput"),
   clearBtn: document.getElementById("clearBtn"),
   sortSelect: document.getElementById("sortSelect"),
@@ -43,6 +45,7 @@ const state = {
   sortMode: SORT_MODES.LENGTH_ASC,
   maxRender: DEFAULT_MAX_RENDER,
   flowMode: FLOW_MODES.ROW_FLOW,
+  settingsOpen: false,
   ready: false,
   renderJobId: 0
 };
@@ -58,7 +61,9 @@ async function start() {
 
 function bindEvents() {
   document.addEventListener("keydown", onGlobalKeydown);
+  document.addEventListener("click", onDocumentClick);
   elements.prefixInput.addEventListener("input", onPrefixInput);
+  elements.settingsToggleBtn.addEventListener("click", onSettingsToggleClick);
   elements.sortSelect.addEventListener("change", onSortChange);
   elements.maxShownSelect.addEventListener("change", onMaxShownChange);
   elements.flowToggleBtn.addEventListener("click", onFlowToggle);
@@ -68,6 +73,35 @@ function bindEvents() {
     updateView();
   });
 
+}
+
+function onSettingsToggleClick() {
+  setSettingsOpen(!state.settingsOpen);
+}
+
+function onDocumentClick(event) {
+  if (!state.settingsOpen) {
+    return;
+  }
+
+  const target = event.target;
+  if (!(target instanceof Node)) {
+    return;
+  }
+
+  if (elements.settingsMenu.contains(target) || elements.settingsToggleBtn.contains(target)) {
+    return;
+  }
+
+  setSettingsOpen(false);
+}
+
+function setSettingsOpen(isOpen) {
+  state.settingsOpen = Boolean(isOpen);
+  document.body.classList.toggle("settings-open", state.settingsOpen);
+  elements.settingsToggleBtn.classList.toggle("active", state.settingsOpen);
+  elements.settingsToggleBtn.setAttribute("aria-expanded", String(state.settingsOpen));
+  elements.settingsMenu.setAttribute("aria-hidden", String(!state.settingsOpen));
 }
 
 function onPrefixInput(event) {
@@ -181,6 +215,25 @@ function buildLengthBuckets() {
 
 function onGlobalKeydown(event) {
   if (!state.ready) {
+    return;
+  }
+
+  if (
+    !isPhoneOrTabletDevice() &&
+    !event.altKey &&
+    !event.ctrlKey &&
+    !event.metaKey &&
+    !isTypingContext(event.target) &&
+    event.key.toLowerCase() === "t"
+  ) {
+    setSettingsOpen(!state.settingsOpen);
+    event.preventDefault();
+    return;
+  }
+
+  if (event.key === "Escape" && state.settingsOpen) {
+    setSettingsOpen(false);
+    event.preventDefault();
     return;
   }
 
