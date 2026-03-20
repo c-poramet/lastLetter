@@ -20,10 +20,12 @@ const STORAGE_KEYS = {
 };
 
 const elements = {
+  main: document.querySelector(".main"),
   solverLayout: document.getElementById("solverLayout"),
   dictionarySize: document.getElementById("dictionarySize"),
   settingsToggleBtn: document.getElementById("settingsToggleBtn"),
   settingsMenu: document.getElementById("settingsMenu"),
+  inputStickyWrap: document.querySelector(".input-sticky-wrap"),
   prefixInput: document.getElementById("prefixInput"),
   clearBtn: document.getElementById("clearBtn"),
   sortSelect: document.getElementById("sortSelect"),
@@ -47,6 +49,7 @@ const state = {
   maxRender: DEFAULT_MAX_RENDER,
   flowMode: FLOW_MODES.ROW_FLOW,
   settingsOpen: false,
+  mobileInputDockThreshold: 0,
   ready: false,
   renderJobId: 0
 };
@@ -63,6 +66,11 @@ async function start() {
 function bindEvents() {
   document.addEventListener("keydown", onGlobalKeydown);
   document.addEventListener("click", onDocumentClick);
+  window.addEventListener("scroll", onViewportScroll, { passive: true });
+  window.addEventListener("resize", onViewportResize, { passive: true });
+  if (elements.main) {
+    elements.main.addEventListener("scroll", onViewportScroll, { passive: true });
+  }
   elements.prefixInput.addEventListener("input", onPrefixInput);
   elements.settingsToggleBtn.addEventListener("click", onSettingsToggleClick);
   elements.sortSelect.addEventListener("change", onSortChange);
@@ -74,6 +82,15 @@ function bindEvents() {
     updateView();
   });
 
+}
+
+function onViewportScroll() {
+  updateMobileInputDock();
+}
+
+function onViewportResize() {
+  refreshMobileInputDockThreshold();
+  updateMobileInputDock();
 }
 
 function onSettingsToggleClick() {
@@ -104,6 +121,9 @@ function setSettingsOpen(isOpen) {
   elements.settingsToggleBtn.classList.toggle("active", state.settingsOpen);
   elements.settingsToggleBtn.setAttribute("aria-expanded", String(state.settingsOpen));
   elements.settingsMenu.setAttribute("aria-hidden", String(!state.settingsOpen));
+
+  refreshMobileInputDockThreshold();
+  updateMobileInputDock();
 }
 
 function onPrefixInput(event) {
@@ -115,6 +135,54 @@ function onPrefixInput(event) {
   }
 
   event.target.value = state.prefix.toUpperCase();
+}
+
+function getMobileInputDockTop() {
+  return window.innerWidth <= 520 ? 142 : 112;
+}
+
+function getActiveScrollTop() {
+  const docTop = document.scrollingElement ? document.scrollingElement.scrollTop : window.pageYOffset;
+  const mainTop = elements.main ? elements.main.scrollTop : 0;
+  return Math.max(docTop || 0, mainTop || 0);
+}
+
+function isMobileViewport() {
+  return window.innerWidth <= 720;
+}
+
+function refreshMobileInputDockThreshold() {
+  if (!elements.prefixInput || !isMobileViewport()) {
+    state.mobileInputDockThreshold = 0;
+    document.body.classList.remove("mobile-input-docked");
+    return;
+  }
+
+  const wasDocked = document.body.classList.contains("mobile-input-docked");
+  if (wasDocked) {
+    document.body.classList.remove("mobile-input-docked");
+  }
+
+  const rect = elements.prefixInput.getBoundingClientRect();
+  state.mobileInputDockThreshold = getActiveScrollTop() + rect.top - getMobileInputDockTop();
+
+  if (wasDocked) {
+    updateMobileInputDock();
+  }
+}
+
+function updateMobileInputDock() {
+  if (!isMobileViewport()) {
+    document.body.classList.remove("mobile-input-docked");
+    return;
+  }
+
+  if (!Number.isFinite(state.mobileInputDockThreshold) || state.mobileInputDockThreshold <= 0) {
+    refreshMobileInputDockThreshold();
+  }
+
+  const shouldDock = getActiveScrollTop() > state.mobileInputDockThreshold;
+  document.body.classList.toggle("mobile-input-docked", shouldDock);
 }
 
 function onSortChange(event) {
@@ -183,6 +251,8 @@ async function loadWordList() {
     elements.dictionarySize.textContent = `${formatNumber(state.words.length)} words`;
     elements.statusTag.textContent = "ready";
     elements.statusTag.classList.add("ready");
+    refreshMobileInputDockThreshold();
+    updateMobileInputDock();
   } catch (error) {
     elements.dictionarySize.textContent = "load error";
     elements.statusTag.textContent = "error";
