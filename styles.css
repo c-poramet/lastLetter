@@ -149,6 +149,7 @@ body {
 }
 
 .settings-menu {
+  display: none;
   flex: 0 0 0;
   min-width: 0;
   max-width: 0;
@@ -164,6 +165,8 @@ body {
 }
 
 .solver-layout.settings-open .settings-menu {
+  display: flex;
+  flex-direction: column;
   flex-basis: 320px;
   min-width: 280px;
   max-width: 360px;
