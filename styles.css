@@ -552,7 +552,7 @@ body.settings-open .solver-layout.settings-open .settings-menu {
 
   body.mobile-input-docked .word-input {
     position: fixed;
-    top: calc(112px + env(safe-area-inset-top, 0px));
+    top: var(--mobile-dock-top, 112px);
     left: calc(22px + env(safe-area-inset-left, 0px));
     right: calc(22px + env(safe-area-inset-right, 0px));
     width: auto;
@@ -642,7 +642,7 @@ body.settings-open .solver-layout.settings-open .settings-menu {
   }
 
   body.mobile-input-docked .word-input {
-    top: calc(142px + env(safe-area-inset-top, 0px));
+    top: var(--mobile-dock-top, 142px);
     left: calc(18px + env(safe-area-inset-left, 0px));
     right: calc(18px + env(safe-area-inset-right, 0px));
   }

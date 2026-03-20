@@ -20,6 +20,7 @@ const STORAGE_KEYS = {
 };
 
 const elements = {
+  header: document.querySelector(".header"),
   main: document.querySelector(".main"),
   solverLayout: document.getElementById("solverLayout"),
   dictionarySize: document.getElementById("dictionarySize"),
@@ -60,6 +61,9 @@ async function start() {
   bindEvents();
   await loadWordList();
   updateView();
+  requestAnimationFrame(() => {
+    updateMobileInputDock();
+  });
 }
 
 function bindEvents() {
@@ -151,7 +155,14 @@ function onPrefixInput(event) {
 }
 
 function getMobileInputDockTop() {
-  return window.innerWidth <= 520 ? 142 : 112;
+  if (!elements.header) {
+    return window.innerWidth <= 520 ? 142 : 112;
+  }
+
+  const headerBottom = elements.header.getBoundingClientRect().bottom;
+  const dockTop = Math.max(0, Math.round(headerBottom + 8));
+  document.documentElement.style.setProperty("--mobile-dock-top", `${dockTop}px`);
+  return dockTop;
 }
 
 function isMobileViewport() {
@@ -166,8 +177,14 @@ function updateMobileInputDock() {
 
   const wrapTop = elements.inputStickyWrap.getBoundingClientRect().top;
   const dockTop = getMobileInputDockTop();
-  const inputFocused = document.activeElement === elements.prefixInput;
-  const shouldDock = inputFocused || wrapTop <= dockTop;
+  const isDocked = document.body.classList.contains("mobile-input-docked");
+  const hysteresis = 6;
+
+  let shouldDock = wrapTop <= dockTop;
+  if (isDocked) {
+    shouldDock = wrapTop <= dockTop + hysteresis;
+  }
+
   document.body.classList.toggle("mobile-input-docked", shouldDock);
 }
 
@@ -238,6 +255,9 @@ async function loadWordList() {
     elements.statusTag.textContent = "ready";
     elements.statusTag.classList.add("ready");
     updateMobileInputDock();
+    requestAnimationFrame(() => {
+      updateMobileInputDock();
+    });
   } catch (error) {
     elements.dictionarySize.textContent = "load error";
     elements.statusTag.textContent = "error";
