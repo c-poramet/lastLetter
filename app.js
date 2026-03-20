@@ -67,10 +67,16 @@ function bindEvents() {
   document.addEventListener("click", onDocumentClick);
   window.addEventListener("scroll", onViewportScroll, { passive: true });
   window.addEventListener("resize", onViewportResize, { passive: true });
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener("resize", onViewportResize, { passive: true });
+    window.visualViewport.addEventListener("scroll", onViewportScroll, { passive: true });
+  }
   if (elements.main) {
     elements.main.addEventListener("scroll", onViewportScroll, { passive: true });
   }
   elements.prefixInput.addEventListener("input", onPrefixInput);
+  elements.prefixInput.addEventListener("focus", onPrefixFocus);
+  elements.prefixInput.addEventListener("blur", onPrefixBlur);
   elements.settingsToggleBtn.addEventListener("click", onSettingsToggleClick);
   elements.sortSelect.addEventListener("change", onSortChange);
   elements.maxShownSelect.addEventListener("change", onMaxShownChange);
@@ -81,6 +87,17 @@ function bindEvents() {
     updateView();
   });
 
+}
+
+function onPrefixFocus() {
+  updateMobileInputDock();
+}
+
+function onPrefixBlur() {
+  // iOS can update viewport a tick after blur; defer dock recalculation to avoid snap-back.
+  setTimeout(() => {
+    updateMobileInputDock();
+  }, 80);
 }
 
 function onViewportScroll() {
@@ -149,7 +166,8 @@ function updateMobileInputDock() {
 
   const wrapTop = elements.inputStickyWrap.getBoundingClientRect().top;
   const dockTop = getMobileInputDockTop();
-  const shouldDock = wrapTop <= dockTop;
+  const inputFocused = document.activeElement === elements.prefixInput;
+  const shouldDock = inputFocused || wrapTop <= dockTop;
   document.body.classList.toggle("mobile-input-docked", shouldDock);
 }
 
